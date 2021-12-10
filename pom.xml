@@ -37,13 +37,13 @@
 							<artifactId>mysql-connector-java</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
-				<cloudHubDeployment>
+				<!-- <cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
 						<muleVersion>${mule.version}</muleVersion>
-						<!-- Deploy User Parameter -->
+						Deploy User Parameter
 						<username>${anypoint.username}</username>
 						<password>${anypoint.password}</password>
-						<!-- Environment Parameter -->
+						Environment Parameter
 						<environment>${cloudhub.environment}</environment>
 						<applicationName>${cloudhub.app}</applicationName>
 						<businessGroup>${cloudhub.bg}</businessGroup>
@@ -53,7 +53,7 @@
 							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
 							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
 						</properties>
-					</cloudHubDeployment>
+					</cloudHubDeployment> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -73,12 +73,7 @@
 				<configuration>
 					<coverage>
 						<runCoverage>true</runCoverage>
-						<ignoreFiles>
-						<ignoreFile>
-						global.xml
-						</ignoreFile>
 						
-						</ignoreFiles>
 						<formats>
 							<format>html</format>
 						</formats>
