@@ -1,0 +1,71 @@
+#%RAML 1.0
+title: Walmart Operations
+
+securitySchemes:
+  secureby: !include securityscheme/securityscheme.raml
+
+
+uses:
+  lib: /datatypes/walmart_library.raml
+  
+
+traits:
+  responses: !include /traits/responses.raml
+  
+
+/productdetails:
+  is: [responses]
+  securedBy:
+    - secureby
+  get:
+    description: "Get Product Details"
+    queryParameters:
+        usItemId:
+          required: true
+          minLength: 8
+          maxLength: 12
+      
+    responses:
+      200: 
+        description: "Product Details"
+        body:
+          application/json:
+            type: lib.product_details
+            examples:
+              output: !include examples/product_example.json
+
+/storedetails:
+  is: [responses]
+  securedBy:
+    - secureby
+  get:
+    description: "Find Nearest Store"
+    queryParameters:
+        postalCode:
+          required: true
+          minLength: 5
+          maxLength: 5
+    responses:
+      200: 
+        description: "Store Details"
+        body:
+          application/json:
+            example: !include examples/product_example.json
+
+/postdetails:
+  is: [responses]
+  securedBy:
+    - secureby
+  post:
+    description: "Post Order Details"
+    body:
+      application/json:
+        example: !include examples/post_details.json
+    responses:
+      201:
+          body:
+            application/json:
+              description: Please find the Flight Details
+              example: !include examples/insert_response.json
+
+    

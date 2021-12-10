@@ -1,0 +1,10 @@
+{
+"order_id": "12345",
+"store_id": "567873",
+"store_address": "Unnao",
+"store_name": "Walmart Inc",
+"store_distance": "2.4km",
+"store_contact_number": "9958511228",
+"product_type_id":"AC45",
+"quantity":"12"
+}

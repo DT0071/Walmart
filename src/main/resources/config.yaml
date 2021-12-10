@@ -1,0 +1,16 @@
+http:
+  host: "walmart.p.rapidapi.com"
+  port: "8081"
+  X-RapidAPI-Host: "walmart.p.rapidapi.com"
+  X-RapidAPI-Key: "9228070b2bmshb79bb1b6fd501efp135377jsn6048f0e3feeb"
+
+db:
+  host: "db4free.net"
+  username: "c4ebatch5"
+  password: "c4ebatch@5"
+  database: "testdbc45"
+  port: "3306"
+  
+
+  
+  

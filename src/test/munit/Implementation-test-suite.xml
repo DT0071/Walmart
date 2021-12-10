@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="Implementation-test-suite.xml" />
+	<munit:test name="Implementation-test-suite-productDetailsTest" doc:id="aeee746e-7d3b-42bb-91d8-9607d390d2eb" description="To test JSON output">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="57bd0e0d-95d1-4d79-b363-2cff06e875ff" >
+				<munit:attributes value="#[queryParams:{usItemId:'770319092'}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to productDetails" doc:id="2379141f-1a25-4661-98de-a2c4c2f01714" name="productDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="35d38013-c80b-4019-a768-40e2042f7c04" expression="#[payload]" is='#[MunitTools::withMediaType("application/JSON")]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-productDetailsTest1" doc:id="a7387393-d647-4fb7-9f3e-f4fb471ac574" description="To Mock Request Operation of productDetails flow">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a02b26bc-0a18-4b09-a6be-fa77f3b270ff" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configurations" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('productdetails_mock_request.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to productDetails" doc:id="368152d1-7cff-475e-b864-861e8482b167" name="productDetails"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-nearestStoreDetailsTest" doc:id="06b8f500-c2ef-4db5-8210-cc051d99ac1c" description="To mock request operation of nearestStoreDetails flow">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="23ffe442-1325-49bb-a668-8a1b1e0d99a7" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="JAVA to JSON" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mock_transform.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to nearestStoreDetails" doc:id="f33b1536-0956-4909-b83f-bf9b8636c884" name="nearestStoreDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="3f5009a4-1ecc-4a6e-b02f-292656c9f72e" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-postDetailsTest" doc:id="248efce5-0d5f-42cf-9d46-42a41fb6184f" description="Mock insert and check payload">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="12c3c69d-7656-4d06-b7c5-213f20e99d80" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Database_Confign" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mock_post_body.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to postDetails" doc:id="e463d1cd-809e-429e-b7b0-28a5c6aed037" name="postDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6eeb60a5-99e4-48db-b5ea-9b1894909971" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest" doc:id="43fc6140-492a-4a86-87d7-169cc89a1f56" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when: APIKIT: BAD_REQUEST" doc:id="bd4546b6-8891-49b6-983f-441e85f51af4" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="20ed2f7f-4878-42b7-bacd-926d38e5f029" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="65f22d1f-5d31-46e0-94e7-61fded80671b" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest1" doc:id="c7394583-03b3-4eaa-b762-15e43bd6cbe7" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT:METHOD_NOT_ALLOWED" doc:id="4c76fcd9-1ad7-4175-aff8-156b3ec14c33" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="d007d0ea-a82c-44b6-8322-69633bd3b8fa" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="cb9b11f2-73e9-4eca-8fd0-20e6206f08f5" actual="#[vars.httpStatus]" expected="#[405]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest2" doc:id="fef762da-8dbe-47ba-9771-5c93151889a6" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT:NOT_FOUND" doc:id="4533b201-623e-4057-bcc9-4e1ac597b94c" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="8c381385-8036-49dc-9127-4b50eb2b6c97" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="779a500e-f0bc-4e31-ba6b-65603d4cd31a" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest3" doc:id="7926f94f-5954-4751-9e43-988ccf943012" description="Test" expectedErrorType="APIKIT:NOT_ACCEPTABLE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when API_KIT:NOT_ACCEPTABLE" doc:id="ef2f755f-7026-4099-bd86-59dfc04d1fa4" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="721ef7f2-264c-4c19-9264-557af5686451" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="f8ef052d-aeba-4942-918e-53d61c5269bc" actual="#[vars.httpStatus]" expected="#[406]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest4" doc:id="d0d98490-3c9d-4968-b2ee-5962c99ecd8b" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="49ef3065-c43b-4b40-ab8f-e4099791bd84" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="f41709f1-0bb8-4fa0-bf1a-de88e352d79c" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="0841b76b-3b4f-41e3-ab7a-8c4562f376ad" actual="#[vars.httpStatus]" expected="#[415]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-mainTest5" doc:id="d443f0ce-e54f-493a-ad8a-6dc134508e56" description="Test" expectedErrorType="APIKIT:NOT_IMPLEMENTED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT:NOT_IMPLEMENTED" doc:id="affe7b80-25cb-4aff-b02c-b80dbf48f170" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-main" doc:id="87e20d74-5cfb-4572-804b-7f47d664285b" name="walmart-api-v1-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="8b7dad19-8f45-44ef-9fdd-7de554736b38" actual="#[vars.httpStatus]" expected="#[501]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-walmart-api-v1-consoleTest" doc:id="50afb947-0d0c-4bef-a0f5-50a820c94799" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when: Console: Not Found" doc:id="e0b7cf91-0016-4bae-ba29-88495477c49e" processor="apikit:console">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="walmart-api-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to walmart-api-v1-console" doc:id="f2392dea-a2cb-4204-b5ec-9d59f164a0c5" name="walmart-api-v1-console"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="1ed6f714-623b-4e4a-a4ec-02d76610148f" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\productdetailsTest" doc:id="a068f919-94bf-48aa-803a-7d2ef4147405" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1f4d6d10-1816-4e9f-b202-46f208956960" >
+				<munit:attributes value="#[queryParams:{usItemId:'770319092'}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\productdetails" doc:id="ade7d0b6-a32a-4951-a47b-a7d8f531660a" name="get:\productdetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2f80f95e-378b-4cb7-b506-e55462d89019" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\postdetailsTest" doc:id="3f01c5a6-140a-4925-8186-5da787e4e368" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="be73aafa-4296-4b88-a751-f27dfb6d03cd" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Database_Confign" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mock_post_body.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\postdetails" doc:id="767b185e-6b31-4020-8723-3c23d7fbd8a2" name="post:\postdetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c3ebfeec-e4ca-4a9d-a6fe-d8fb0ca0f54b" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	
+
+
+</mule>

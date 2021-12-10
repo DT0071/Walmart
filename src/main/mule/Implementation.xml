@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<!-- <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e031a311-16b5-4763-8de3-5419adb78ac3">
+		<http:request-connection host="walmart.p.rapidapi.com" protocol="HTTPS"/>
+	</http:request-config> -->
+	<!-- <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3024f8a0-32eb-42ca-bbe0-e71a92202aee" >
+		<http:listener-connection host="0.0.0.0" port="8081"/>
+	</http:listener-config> -->
+	<!-- <db:config name="Database_Config" doc:name="Database Config" doc:id="c502525b-67a1-46cb-af36-889314bba95e" >
+		<db:my-sql-connection host="db4free.net" port="3306" user="c4ebatch5" password="c4ebatch@5" database="testdbc45" />
+	</db:config> -->
+	<flow name="productDetails" doc:id="56384308-403d-41f0-b0b2-25a6aee9e5ac" >
+		<http:request method="GET" doc:name="Request" doc:id="258769c2-4389-442a-9064-32cc76f1342e" config-ref="HTTP_Request_configurations" path="/products/v3/get-details">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-RapidAPI-Host" : "walmart.p.rapidapi.com",
+	"X-RapidAPI-Key" : "9228070b2bmshb79bb1b6fd501efp135377jsn6048f0e3feeb"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	usItemId : attributes.queryParams.usItemId
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="JAVA to JSON" doc:id="dfe9ece4-0b8b-4ffd-8832-2446e4f2e1d0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5f417913-6997-49aa-abd4-392588ac7171" message="#[payload]"/>
+	</flow>
+	<flow name="nearestStoreDetails" doc:id="92779786-07c4-48be-be5e-2670ebf4d4cd" >
+		<http:request method="GET" doc:name="Request" doc:id="19383fca-82ed-40a7-abf6-12a50bfca4a3" config-ref="HTTP_Request_configurations" path="/stores/list">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-RapidAPI-Host" : "walmart.p.rapidapi.com",
+	"X-RapidAPI-Key" : "9228070b2bmshb79bb1b6fd501efp135377jsn6048f0e3feeb"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"postalCode" : attributes.queryParams.postalCode
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="JAVA to JSON" doc:id="7cca7620-097b-4784-9d7c-145d7c568719">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var a = payload.data.storesBySearchTerm.stores orderBy $.distance
+---
+a[0] mapObject (value, key, index) -> (
+    if((key) as String == "address")
+    {
+        (key): a[0].address.address++ ", "++ a[0].address.city ++ ", "++ a[0].address.state ++ "," ++ a[0].address.country ++ "(" ++ a[0].address.postalCode ++")"
+    }
+    else {
+        (key): value
+    }
+)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="05ba0974-9aa3-4858-a240-efc34ed47f7b" message="#[payload]"/>
+	</flow>
+	<flow doc:id="47542170-bbc4-47f0-ba65-64b5cea698b7" name="postDetails">
+		<logger level="INFO" doc:name="Logger" doc:id="050d2205-be98-421e-936b-420114c96527" message="#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="27e5ba94-4bea-4b45-b86d-e2478f84b343" config-ref="Database_Confign">
+			<db:sql ><![CDATA[INSERT INTO productdetails (order_id,store_id,store_name,store_address,store_distance,store_contact_number,product_type_id,quantity)
+VALUES (:order_id,:store_id,:store_name,:store_address,:store_distance,:store_contact_number,:product_type_id,:quantity);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+order_id: payload.order_id,
+store_id: payload.store_id,
+store_address: payload.store_address,
+store_name: payload.store_name,
+store_distance: payload.store_distance,
+store_contact_number : payload.store_contact_number,
+product_type_id:payload.product_type_id,
+quantity:payload.quantity
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="77b1037f-a19e-4660-a30a-c06c6b5da5ab" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Data Inserted Successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="fd789423-8890-4c0e-9e42-9cd2ea51f284" />
+	</flow>
+</mule>

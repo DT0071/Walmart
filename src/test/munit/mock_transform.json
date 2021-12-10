@@ -1,0 +1,30 @@
+      
+{
+  "distance": 2.24,
+  "id": 2893,
+  "displayName": "Independence Supercenter",
+  "storeType": {
+    "id": "1",
+    "displayName": "Supercenter"
+  },
+  "address": "121 Peter Pan Rd, Independence, KS,US(67301)",
+  "operationalHours": {
+    "open24Hours": null,
+    "todayHrs": {
+      "startHr": "06:00",
+      "endHr": "23:00",
+      "openFullDay": null
+    },
+    "tomorrowHrs": {
+      "startHr": "06:00",
+      "endHr": "23:00",
+      "openFullDay": null
+    }
+  },
+  "geoPoint": {
+    "latitude": 37.222679,
+    "longitude": -95.74349
+  },
+  "timeZone": "America/Chicago"
+}
+    
