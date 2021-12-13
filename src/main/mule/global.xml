@@ -23,6 +23,7 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<apikit:config name="walmart-api-v1-config" api="walmart-api-v1.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	<configuration-properties doc:name="Configuration properties" doc:id="a9ca6b26-97dc-480a-ab76-2ab1db1dac13" file="config.yaml" />
 	<configuration-properties doc:name="Configuration properties" doc:id="addf3a94-b094-44d3-a796-76d6a7b08c58" file="config.properties" />
+	<api-gateway:autodiscovery apiId="17496168" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="27fc63a2-df14-4ba7-b1eb-50854b311b58" flowRef="walmart-api-v1-main" />
 	<error-handler name="globalError_Handler" doc:id="11dc2fe7-0ddc-4e8a-88f1-0be5740931dc" >
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2e2915de-d33e-4694-aa5c-b890f8661566" type="HTTP:BAD_GATEWAY, HTTP:BAD_REQUEST, HTTP:CONNECTIVITY, HTTP:INTERNAL_SERVER_ERROR, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_FOUND, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT, HTTP:TOO_MANY_REQUESTS">
 			<ee:transform doc:name="Transform Message" doc:id="e469889b-1a34-43bb-9230-7e56ae647f78" >
